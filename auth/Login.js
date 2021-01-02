@@ -3,6 +3,8 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Card, Button, Input } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import firebase from "firebase";
+import { signInUser } from "../redux/actions/userActions";
+import { useSelector, useDispatch } from "react-redux";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,16 +20,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
+  const signedInUser = useSelector((state) => state.signedInUser);
+  const { loading, user, error } = signedInUser;
 
   const loginHandler = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, Password)
-      .then((res) => console.log(res))
-      .catch((error) => console.log(error));
+    dispatch(signInUser({ email, Password }));
   };
   return (
     <View style={styles.container}>
@@ -37,6 +39,7 @@ const Login = () => {
         <Input
           placeholder="email"
           leftIcon={{ type: "MaterialCommunityIcons", name: "email" }}
+          errorMessage={error && "Wrong email or password."}
           onChange={(e) => setEmail(e.target.value)}
         />
         <Input
@@ -45,9 +48,20 @@ const Login = () => {
           leftIcon={{ type: "MaterialCommunityIcons", name: "lock" }}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="solid" title="Log in" raised onPress={loginHandler} />
+
+        {!loading ? (
+          <Button type="solid" title="Log in" raised onPress={loginHandler} />
+        ) : (
+          <Button type="solid" raised loading />
+        )}
         <Text>
-          Not a User ?<Button size="small" type="clear" title="Register" />
+          Not a User ?
+          <Button
+            size="small"
+            type="clear"
+            title="Register"
+            onPress={() => navigation.navgate("register")}
+          />
         </Text>
       </View>
     </View>

@@ -1,82 +1,76 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import { useDispatch, useSelector } from "react-redux";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import LoginScreen from "../auth/Login";
-import RegisterScreen from "../auth/Register";
 import ProductsScreen from "../Screens/ProductsScreen";
+import { fetchUserPosts } from "../redux/actions/userActions";
 
 const MainScreen = () => {
-  const stack = createStackNavigator();
+  const fetchUserPostsReducer = useSelector((state) => state.fetchUserPosts);
+  const { currentUser } = fetchUserPostsReducer;
+
+  const dispatch = useDispatch();
+
   const tab = createBottomTabNavigator();
+
+  useEffect(() => {
+    currentUser && dispatch(fetchUserPosts);
+  }, []);
 
   return (
     <NavigationContainer>
-      <stack.Navigator initialRouteName="register">
-        <stack.Screen
-          name="landing"
-          component={LoginScreen}
-          options={{ headerShown: false }}
+      <tab.Navigator>
+        <tab.Screen
+          name="Givt"
+          component={ProductsScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="gift" color={color} size={26} />
+            ),
+          }}
         />
-        <stack.Screen
-          name="register"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
+        <tab.Screen
+          name="Fav"
+          component={ProductsScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="heart-outline"
+                color={color}
+                size={26}
+              />
+            ),
+          }}
         />
-        <stack.Screen name="products" component={ProductsScreen} />
-      </stack.Navigator>
-
-      {/*  <tab.Navigator>
-    <tab.Screen
-      name="Givt"
-      component={ProductsScreen}
-      options={{
-        tabBarIcon: ({ color }) => (
-          <MaterialCommunityIcons name="gift" color={color} size={26} />
-        ),
-      }}
-    />
-    <tab.Screen
-      name="Fav"
-      component={ProductsScreen}
-      options={{
-        tabBarIcon: ({ color }) => (
-          <MaterialCommunityIcons
-            name="heart-outline"
-            color={color}
-            size={26}
-          />
-        ),
-      }}
-    />
-    <tab.Screen
-      name="Profile"
-      component={ProductsScreen}
-      options={{
-        tabBarIcon: ({ color }) => (
-          <MaterialCommunityIcons
-            name="account-outline"
-            color={color}
-            size={26}
-          />
-        ),
-      }}
-    />
-    <tab.Screen
-      name="Cart"
-      component={ProductsScreen}
-      options={{
-        tabBarIcon: ({ color }) => (
-          <MaterialCommunityIcons
-            name="cart-outline"
-            color={color}
-            size={26}
-          />
-        ),
-      }}
-    />
-  </tab.Navigator> */}
+        <tab.Screen
+          name="Profile"
+          component={ProductsScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="account-outline"
+                color={color}
+                size={26}
+              />
+            ),
+          }}
+        />
+        <tab.Screen
+          name="Cart"
+          component={ProductsScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="cart-outline"
+                color={color}
+                size={26}
+              />
+            ),
+          }}
+        />
+      </tab.Navigator>
     </NavigationContainer>
   );
 };

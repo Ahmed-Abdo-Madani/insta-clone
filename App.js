@@ -2,17 +2,17 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-elements";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MainScreen from "./Screens/MainScreen";
 
-import { Provider } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import thunk from "redux-thunk";
-import reducers from "./redux/store";
-const store = createStore(reducers, applyMiddleware(thunk));
-
+import { Provider, useSelector } from "react-redux";
+import Store from "./redux/store";
 import firebase from "firebase/app";
+
+import LoginScreen from "./auth/Login";
+import RegisterScreen from "./auth/Register";
 
 // Add the Firebase services that you want to use
 import "firebase/auth";
@@ -33,6 +33,7 @@ if (firebase.apps.length === 0) {
 }
 
 export default function App() {
+  const stack = createStackNavigator();
   const [loaded, setLoaded] = useState(false);
   const [logedIn, setLogedIn] = useState(false);
 
@@ -48,17 +49,30 @@ export default function App() {
     });
   }, []);
 
-  return !loaded ? (
-    <View style={styles.loading}>
-      <Button title="Loading" type="clear" loading />
-    </View>
-  ) : logedIn ? (
-    <View style={styles.loading}>
-      <Button title="Loged In" type="clear" />
-    </View>
-  ) : (
-    <Provider store={store}>
-      <MainScreen />
+  return (
+    <Provider store={Store}>
+      {!loaded ? (
+        <View style={styles.loading}>
+          <Button title="Loading" type="clear" loading />
+        </View>
+      ) : !logedIn ? (
+        <NavigationContainer>
+          <stack.Navigator initialRouteName="login">
+            <stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <stack.Screen
+              name="register"
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
+          </stack.Navigator>
+        </NavigationContainer>
+      ) : (
+        <MainScreen />
+      )}
     </Provider>
   );
 }

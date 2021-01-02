@@ -5,6 +5,9 @@ import {
   GET_USER_POSTS_REQUEST,
   GET_USER_POSTS_SUCCESS,
   GET_USER_POSTS_FAIL,
+  SIGIN_IN_USER_REQUEST,
+  SIGIN_IN_USER_SUCCESS,
+  SIGIN_IN_USER_FAIL,
 } from "../constants/userConstants";
 
 export const registerUserReducer = (state = {}, action) => {
@@ -20,6 +23,28 @@ export const registerUserReducer = (state = {}, action) => {
       };
     case REGISTER_USER_FAIL:
       return {
+        loading: false,
+      };
+    default:
+      return state;
+  }
+};
+
+export const signedInUserReducer = (state = { user: null }, action) => {
+  switch (action.type) {
+    case SIGIN_IN_USER_REQUEST:
+      return {
+        loading: true,
+      };
+
+    case SIGIN_IN_USER_SUCCESS:
+      return {
+        user: action.payload,
+        loading: false,
+      };
+    case SIGIN_IN_USER_FAIL:
+      return {
+        error: action.payload,
         loading: false,
       };
     default:
